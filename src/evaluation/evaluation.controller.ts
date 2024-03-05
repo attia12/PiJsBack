@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, Req } from "@nestjs/common";
 import { EvaluationService } from "./evaluation.service";
 import { Evaluation } from "src/schemas/evaluation.schema";
 import { CreateEvaluationDto } from "src/dto/create-evaluation.dto";
@@ -27,6 +27,32 @@ export class EvaluationController{
 
     @Delete('deleteEvaluation/:id')
     deleteEvaluationById(@Param('id') id:string) : Promise<Evaluation> {
-        return  this.evaluationService.deleteById(id);
+        return this.evaluationService.deleteById(id);
     }
+    @Get('getEvaluationsByEmployee/:employee')
+    async findByEmployee(@Param('employee') employee: string): Promise<Evaluation[]> {
+        return await this.evaluationService.findByEmployee(employee);
+    }
+
+
+
+
+@Get('average-ratings')
+async getAllEmployeesAverageRatings(): Promise<{ employee: string; averageRating: number }[]> {
+  try {
+    const averageRatings = await this.evaluationService.getEmployeesAverageRatings();
+    return averageRatings;
+  } catch (error) {
+    console.error('Error getting all employees average ratings:', error);
+  }
+}
+
+
+
+//      @Get('search')
+//   async search(@Query('text') searchText: string): Promise<Evaluation[]> {
+//     return await this.evaluationService.search(searchText);
+//   }
+
+
 }

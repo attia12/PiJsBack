@@ -1,5 +1,4 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-
 import * as mongoose from 'mongoose';
 import { User } from "./User.schema";
 
@@ -8,20 +7,22 @@ import { User } from "./User.schema";
 @Schema({
     timestamps: true
 })
-export class Evaluation{
-    // @Prop({ type: mongoose.Schema.Types.ObjectId, ref: User.name })
-    // company:User
-    @Prop()
-    company:string
-    @Prop()
-    commentaire:string
-    @Prop()
-    note: number
-
+export class TimeEntry{
     // @Prop({ type: mongoose.Schema.Types.ObjectId, ref: User.name })
     // employee:User
     @Prop()
     employee:string
+    @Prop()
+    date:Date
+    @Prop()
+    startTime: string
+    
+    @Prop()
+    endTime:string
+    @Prop()
+    status:string
+    @Prop()
+    justification:string
 
 }
-export const EvaluationSchema = SchemaFactory.createForClass(Evaluation)
+export const TimeEntrySchema = SchemaFactory.createForClass(TimeEntry)

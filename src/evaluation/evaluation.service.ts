@@ -37,4 +37,48 @@ export class EvaluationService{
         return await this.EvaluationModel.findByIdAndDelete(id);
        
     }
+
+    async findByEmployee(employee: string): Promise<Evaluation[]> {
+        return await this.EvaluationModel.find({ employee });
+    }
+
+    async search(searchText: string): Promise<Evaluation[]> {
+    const searchRegex = new RegExp(searchText, 'i'); // Case-insensitive search
+    return await this.EvaluationModel.find({
+      $text: { $search: searchText },
+    });
+  }
+//   async findAllByEmployee(): Promise<Evaluation[]> {
+//         const  evaluations = await this.EvaluationModel.
+//         return evaluations;
+//     }
+
+
+// 
+
+
+async getEmployeesAverageRatings(): Promise<{ employee: string; averageRating: number }[]> {
+  try {
+    const result = await this.EvaluationModel.aggregate([
+      {
+        $group: {
+          _id: '$employee', // Group by company name
+          averageRating: { $avg: '$note' }, // Calculate average rating
+        },
+      },
+      {
+        $project: {
+          _id: 0, // Exclude unnecessary _id field
+          employee: '$_id', // Assign company name from the group key
+          averageRating: 1, // Replace with 1 to maintain the existing behavior
+        },
+      },
+    ]);
+    return result.map((item) => ({ employee: item.employee, averageRating: item.averageRating }));
+  } catch (error) {
+    console.error('Error getting all companies average ratings:', error);
+    throw error; // Re-throw for further handling
+  }
+}
+
 }
