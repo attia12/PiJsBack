@@ -4,11 +4,8 @@ import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Room } from "./Room.schema";
 
 
-
-
 @Schema()
 export class User {
-
     @Prop({ unique: true, required: true })
     username: string;
   
