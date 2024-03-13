@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { Body, Controller, Get, HttpCode, HttpException, HttpStatus, Param, Post, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpException, HttpStatus, Param, Post, Req, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { UserService } from './user.service';
 import { AuthDto } from 'src/dto/auth.dto';
 import { Tokens } from 'src/types/tokens.type';
@@ -20,6 +20,9 @@ import { v4 as uuidv4 } from 'uuid';
 import { Observable, of } from 'rxjs';
 import { join } from 'path';
 import mongoose from 'mongoose';
+import { EmailService } from './email/email.service';
+import { ForgotPasswordDto } from 'src/dto/forgotPassword.dto';
+import { ResetPasswordDto } from 'src/dto/resetPassword.dto';
 export const storage = {
     storage: diskStorage({
         destination: './uploads/profileimages',
@@ -36,7 +39,7 @@ export const storage = {
 
 @Controller('user')
 export class UserController {
-    constructor(private userService:UserService) {}
+    constructor(private userService:UserService,private readonly emailService: EmailService) {}
     @Public()
     @Post('/signup')
     @HttpCode(HttpStatus.CREATED)
@@ -93,7 +96,10 @@ export class UserController {
         return 'You have access to getUsers API because you have the required role.';
 
     }
+   
+   
     @Get('/getUserById/:id')
+    
     @HttpCode(HttpStatus.OK)
     
     async getUserDetailById(@Param('id') id:string)
@@ -129,6 +135,109 @@ export class UserController {
 findProfileImage(@Param('imagename') imagename, @Res() res): Observable<object> {
     return of(res.sendFile(join(process.cwd(), 'uploads/profileimages/' + imagename)));
 }
+@Public()
+@Get('/email')
+  async sendTestEmail() {
+    await this.emailService.sendEmail(
+      'moutye.bacha@esprit.tn',
+      'Test Email',
+      'This is a test email sent from NestJS!'
+    );
+    return 'Email sent successfully!';
+  }
+  @Public()
+  @Post('/sendOtp')
+    @HttpCode(HttpStatus.OK)
+    async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto): Promise<{ message: string }> {
+        const { email } = forgotPasswordDto;
+        const user = await this.userService.findByEmail(email);
+        if (!user) {
+            throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+        }
+
+        // Generate OTP
+        const otp = Math.floor(1000 + Math.random() * 9000);
+        
+        // Save OTP in database or any caching mechanism if needed
+        await this.userService.saveOTP(email, otp);
+
+        // Send OTP via email
+        await this.emailService.sendOTPByEmail(email, otp);
+
+        return { message: 'OTP has been sent to your email for password reset verification.' };
+    }
+    @Public()
+    @Post('/reset-password')
+    async resetPassword(@Body() resetPasswordDto: ResetPasswordDto): Promise<{ message: string }> {
+        try {
+            const { email, otp, newPassword } = resetPasswordDto;
+
+            // Check if user exists
+            const user = await this.userService.findByEmail(email);
+            if (!user) {
+                throw new HttpException('User does not exist with this email!!', HttpStatus.NOT_FOUND);
+            }
+
+            // Check if OTP exists
+            const otps = await this.userService.findOTPByEmail(email);
+            console.log(otps);
+            if (!otps) {
+                throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+
+            // Validate OTP
+            if (otps.otp !== otp) {
+                throw new HttpException('Invalid OTP!!!', HttpStatus.BAD_REQUEST);
+            }
+            const hashedP=await this.userService.hashData(newPassword)
+
+            // Update user password
+            user.hash=hashedP;
+            user.password = hashedP;
+            await this.userService.updateUser(user);
+
+            return { message: 'Password updated!!' };
+        } catch (err) {
+            console.error(err);
+            throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+    }
+     @Public()
+     @Get('google')
+     @UseGuards(AuthGuard('google'))
+    async googleAuth()
+     {
+
+
+    }
+    @Public()
+    @Get('google/callback')
+    @UseGuards(AuthGuard('google'))
+   async googleAuthRederict(@Req()req,@Res()res)
+    {
+        // const jwt=await this.userService.login(req.user)
+        // res.set('authorization',jwt.access_token);
+        return this.userService.googleRederict(req,res);
+    }
+    @Public()
+    @Post('google/login')
+    @UseGuards(AuthGuard('google'))
+    googleLogin(@Req()req,@Res()res)
+    {
+        return this.userService.googleLogin(req,res);
+    }
+    @Get('test')
+    async test(@Res()res)
+    {res.json('success')
+
+    }
+
+
+
+
+
+    
 }
 
 

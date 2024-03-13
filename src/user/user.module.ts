@@ -9,6 +9,11 @@ import { AtStrategy } from 'src/strategies/at.strategy';
 import { RtStrategy } from 'src/strategies/rt.strategy';
 import { JwtModule } from '@nestjs/jwt';
 import { UserSeedService } from 'src/seed/UserSeedService';
+import { EmailService } from './email/email.service';
+import { OTP, OtpSchema } from 'src/schemas/Otp.schema';
+import { GoogleStrategy } from 'src/strategies/google.strategy';
+
+
 
 @Module({
     imports: [MongooseModule.forFeature([
@@ -16,9 +21,17 @@ import { UserSeedService } from 'src/seed/UserSeedService';
             schema : UserSchema
 
         },
+        { name: OTP.name,
+            schema : OtpSchema
 
-    ]),JwtModule.register({})],
-    providers: [UserService,AtStrategy,RtStrategy,UserSeedService],
+        },
+       
+
+
+    ]),JwtModule.register({}),
+],
+    providers: [UserService,AtStrategy,RtStrategy,UserSeedService, EmailService,GoogleStrategy],
+    exports:[UserService],
     controllers: [UserController]
 })
 export class UserModule {

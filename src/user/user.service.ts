@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
 
 
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, HttpStatus, Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { AuthDto } from 'src/dto/auth.dto';
@@ -9,11 +9,17 @@ import { User } from 'src/schemas/User.schema';
 import * as bcrypt from 'bcrypt';
 import { Tokens } from 'src/types/tokens.type';
 import { JwtService } from '@nestjs/jwt';
+import { OTP } from 'src/schemas/Otp.schema';
+import { Request, Response } from 'express';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
+import{v4 as uuidv4,validate as uuidValidate }from 'uuid';
+
 
 @Injectable()
 export class UserService {
-    constructor(@InjectModel(User.name) private userModel: Model<User>,
-    private jwtService: JwtService){}
+    constructor(@InjectModel(User.name) private userModel: Model<User>,@InjectModel(OTP.name) private OtpModel: Model<OTP>,
+    private jwtService: JwtService,@Inject(CACHE_MANAGER) private cacheManager: Cache){}
     hashData(data: string)
     {
         return bcrypt.hash(data,10);
@@ -133,4 +139,131 @@ export class UserService {
        
         return await user.save();
     }
+    async findByEmail(email: string): Promise<User | null> {
+        return this.userModel.findOne({ email });
+    }
+    async saveOTP(email: string, otp: number): Promise<OTP> {
+        const otpDocument = new this.OtpModel({
+            email,
+            otp
+        });
+        return otpDocument.save();
+    }
+    async findOTPByEmail(email: string): Promise<OTP | null> {
+        return this.OtpModel.findOne({ email });
+    }
+    async updateUser(user: any): Promise<User> {
+        
+        
+        return this.userModel.findByIdAndUpdate(user._id, user, { new: true });
+    }
+   async googleRederict(req:Request,res:Response){
+    try {
+        console.log(req.user);
+        const userData = req.user;
+
+       const savedUser= await this.createUserFromGoogle(userData);
+      // const userId = savedUser._id as unknown as number;
+      const jwtTokens = await this.getTokens(savedUser.id, savedUser.email);
+      res.setHeader('authorization', `Bearer ${jwtTokens.access_token}`);
+      console.log("this the token in header",jwtTokens)
+
+
+    //    const { access_token, refresh_token } = await this.getTokens(userId, savedUser.email);
+    //    const redirectUrl = `http://localhost:4200/back/profil/${savedUser._id}?access_token=${access_token}&refresh_token=${refresh_token}`;
+    //    res.redirect(redirectUrl);
+   
+  // res.redirect(`http://localhost:4200/back/profil/${savedUser._id}`);
+  const redirectUrl = `http://localhost:4200/back/profil/${savedUser._id}?access_token=${jwtTokens.access_token}`;
+
+        // Redirect the user to the constructed URL
+        res.redirect(redirectUrl);
+} catch (error) {
+    console.error('Error during Google redirect:', error);
+    res.status(HttpStatus.INTERNAL_SERVER_ERROR).send('Internal Server Error');
+}
+  
+
+      
+       
+
+       
+       
+
+
+
+    }
+    async googleLogin(req:Request,res:Response){
+     
+        try {
+            const authorization = req.get('authorization');
+            if (!authorization) {
+                throw new UnauthorizedException('Authorization header is missing');
+            }
+    
+            const accessToken = authorization.replace('Bearer ', '');
+            if (!accessToken) {
+                throw new UnauthorizedException('Access token is missing');
+            }
+            console.log("token google",accessToken)
+            console.log("authorization",authorization)
+    
+            // Handle the rest of the logic here, such as token verification, user retrieval, etc.
+        } catch (error) {
+            // Handle errors
+            console.error('Error during Google login:', error);
+            if (error instanceof UnauthorizedException) {
+                // Send an unauthorized response if needed
+                res.status(401).send('Unauthorized');
+            } else {
+                // Handle other types of errors accordingly
+                res.status(500).send('Internal Server Error');
+            }
+        }
+    
+     
+      
+
+      
+       
+
+       
+       
+
+
+
+    }
+    async createUserFromGoogle(userData: any) {
+        const { email, firstName, lastName, picture, accessToken } = userData;
+        let existingUser = await this.userModel.findOne({ email });
+
+        // If the user already exists, return the existing user
+        if (existingUser) {
+            return existingUser;
+        }
+
+             const hashedAccessToken = await this.hashData(accessToken); 
+    
+           
+             const newUser = new this.userModel({
+                email,
+                username: firstName + lastName, // Create a username based on first name and last name
+                password: hashedAccessToken, // Store the hashed access token as the password
+               hash: hashedAccessToken, // Store the hashed access token hash
+                 hashedRt: accessToken, // Store the plain access token
+                 roles: ['employee'], // Set default roles
+                permissions: [], // Set default permissions
+                image: picture, // Store the profile picture URL
+             });
+    
+           
+            const savedUser = await newUser.save();
+            return savedUser;
+           
+    }
+    verifyJwt(jwt: string): Promise<any> {
+        return this.jwtService.verifyAsync(jwt, { secret: 'at-secret' });
+      }
+  
+    
 }

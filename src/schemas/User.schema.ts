@@ -1,6 +1,7 @@
 /* eslint-disable prettier/prettier */
 
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { Room } from "./Room.schema";
 
 
 
@@ -30,6 +31,8 @@ export class User {
    permissions: string[];
    @Prop({ required: true, default: 'default_image.jpg' }) 
    image: string;
+   @Prop({ type: [{ type: 'ObjectId', ref: 'Room' }] }) 
+    rooms: Room[]; 
 
 
 }
