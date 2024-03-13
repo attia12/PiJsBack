@@ -26,13 +26,17 @@ export class RoomService {
         return room;
 
     }
-    async getRoomsForUser(userId: string, options: PaginationOptionsInterface):Promise<RoomI[]>
+    async getRoomsForUser(userId: string, options: PaginationOptionsInterface):Promise<any>
     {  console.log("the userId",userId)
         const { page, limit } = options;
+        console.log("the limit from front end ",limit)
+        
 
-        const skip = (page - 1) * limit;
+       // const skip = (page - 1) * limit;
+       const skip = Math.max((page - 1) * limit, 0);
 
         const query = { 'users': userId };
+        const totalItems = await this.roomModel.countDocuments(query);
 
         const rooms = await this.roomModel
             .find(query)
@@ -43,8 +47,18 @@ export class RoomService {
            
          
             console.log("this is from the query",rooms)
+            const totalPages = Math.ceil(totalItems / limit);
 
-            return rooms.map(room => room.toObject());
+            return {
+                items: rooms.map(room => room.toObject()),
+                meta: {
+                    totalItems: totalItems,
+                    itemCount: rooms.length,
+                    itemsPerPage: limit,
+                    totalPages: totalPages,
+                    currentPage: page
+                }
+            };
 
     }
 }

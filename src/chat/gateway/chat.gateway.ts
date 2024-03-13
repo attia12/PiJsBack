@@ -34,18 +34,21 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
       }else {
         socket.data.user=user;
-        // this.title.push('Value '+ Math.random().toString());
-        // this.server.emit('message',this.title);
+       
+      //  const rooms:RoomI[] = await this.roomService.getRoomsForUser(user._id, { page: 1, limit: 10 });
+      //  const roomPaginate: any = { items: rooms, meta: { totalItems: rooms.length, itemCount: rooms.length, itemsPerPage:10, totalPages: 1, currentPage: 1 } };
+      //  console.log("the roompaginator send to front",roomPaginate)
       
-        //only emmit rooms to the specefic connected clinet
+    
+      //  return this.server.to(socket.id).emit('rooms',roomPaginate);
 
-
-        //const rooms=await this.roomService.getRoomsForUser(user._id,{page:1,limit:10});
-       // console.log("this is the rooms ",rooms)
-       // return this.server.to(socket.id).emit('rooms',rooms);
-       const rooms: RoomI[] = await this.roomService.getRoomsForUser(user._id, { page: 1, limit: 10 });
-       const roomPaginate: any = { items: rooms, meta: { totalItems: rooms.length, itemCount: rooms.length, itemsPerPage: 10, totalPages: 1, currentPage: 1 } };
-       return this.server.to(socket.id).emit('rooms',roomPaginate);
+      const { items, meta } = await this.roomService.getRoomsForUser(user._id, { page: 1, limit: 10 });
+     // meta.currentPage=meta.currentPage-1;
+     meta.currentPage = Math.max(meta.currentPage - 1, 0);
+      const roomPaginate: any = { items: items, meta: meta };
+      console.log("the roompaginator send to front", roomPaginate);
+      
+      return this.server.to(socket.id).emit('rooms', roomPaginate);
         
         
 
@@ -78,7 +81,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('paginateRoom')
   async onPaginateRoom(socket: Socket,page:PaginationOptionsInterface)
   {
-    page.limit=page.limit > 100 ? 100 :page.limit;
+    page.limit=page.limit > 100 ? 100 : page.limit;
+
+    page.page=page.page+1;
     const rooms: RoomI[] = await this.roomService.getRoomsForUser(socket.data.user._id,page);
     return this.server.to(socket.id).emit('rooms',rooms);
     
