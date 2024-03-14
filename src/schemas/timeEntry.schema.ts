@@ -15,10 +15,7 @@ export class TimeEntry{
     @Prop()
     date:Date
     @Prop()
-    startTime: string
-    
-    @Prop()
-    endTime:string
+    tempsDeTravail:string
     @Prop()
     status:string
     @Prop()
