@@ -24,7 +24,7 @@ export class LettreDeMotivationService {
       async supprimerLettre(id:string): Promise<LettreDeMotivation[]> {
         return await this.lettreModel.findByIdAndDelete(id);
       }
-      async verifierLettre(id: string): Promise<LettreDeMotivation> {
+      async verifierLettre(id:string): Promise<LettreDeMotivation> {
         const lettre = await this.lettreModel.findByIdAndUpdate(id, { isVerified: true }, { new: true });
         if (!lettre) {
           throw new NotFoundException(`Lettre de motivation introuvable avec l'ID ${id}`);
