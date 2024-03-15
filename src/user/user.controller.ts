@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { Body, Controller, Get, HttpCode, HttpException, HttpStatus, Param, Post, Req, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpException, HttpStatus, NotFoundException, Param, Patch, Post, Put, Req, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { UserService } from './user.service';
 import { AuthDto } from 'src/dto/auth.dto';
 import { Tokens } from 'src/types/tokens.type';
@@ -23,6 +23,9 @@ import mongoose from 'mongoose';
 import { EmailService } from './email/email.service';
 import { ForgotPasswordDto } from 'src/dto/forgotPassword.dto';
 import { ResetPasswordDto } from 'src/dto/resetPassword.dto';
+import { User } from 'src/schemas/User.schema';
+import { UpdateUserDto } from 'src/dto/updateuser.dto';
+import { UpdateRolesPermissionsDto } from 'src/dto/updateRolesPermissions.dto';
 export const storage = {
     storage: diskStorage({
         destination: './uploads/profileimages',
@@ -232,6 +235,56 @@ findProfileImage(@Param('imagename') imagename, @Res() res): Observable<object> 
     {res.json('success')
 
     }
+    @Get('getAllUsers')
+   
+    @UseGuards(AuthGuard('jwt'), PermissionsGuard)
+    @Roles('superadmin')
+    @Permissions('read:user')
+    async getAllUsersExceptSuperadmin(): Promise<User[]> {
+        return this.userService.getAllUsersExceptSuperadmin();
+    }
+    @UseGuards(AuthGuard('jwt'), PermissionsGuard)
+    @Roles('superadmin')
+    @Permissions('delete:user')
+@Delete('/deleteUser/:id')
+async deleteUser(@Param('id') id: string): Promise<{ message: string }> {
+    const user = await this.userService.getUserById(id);
+    if (!user) {
+        throw new NotFoundException('User not found');
+    }
+    await this.userService.deleteUser(id);
+    return { message: 'User deleted successfully' };
+}
+@UseGuards(AuthGuard('jwt'), PermissionsGuard)
+@Roles('superadmin')
+@Permissions('update:user')
+@Put('/updateUser/:id')
+async updateUser(
+    @Param('id') id: string,
+    @Body() updateUserDto: UpdateUserDto,
+): Promise<{ message: string }> {
+    const user = await this.userService.getUserById(id);
+    if (!user) {
+        throw new NotFoundException('User not found');
+    }
+    await this.userService.updateUserCredentials(id, updateUserDto);
+    return { message: 'User credentials updated successfully' };
+}
+@UseGuards(AuthGuard('jwt'))
+@Roles('superadmin')
+@Patch('/updateRolesPermissions/:id')
+async updateRolesPermissions(
+    @Param('id') id: string,
+    @Body() updateRolesPermissionsDto: UpdateRolesPermissionsDto,
+): Promise<{ message: string }> {
+    const user = await this.userService.getUserById(id);
+    if (!user) {
+        throw new NotFoundException('User not found');
+    }
+
+    await this.userService.updateRolesPermissions(id, updateRolesPermissionsDto);
+    return { message: 'User roles and permissions updated successfully' };
+}
 
 
 

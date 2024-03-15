@@ -14,6 +14,8 @@ import { Request, Response } from 'express';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import{v4 as uuidv4,validate as uuidValidate }from 'uuid';
+import { UpdateUserDto } from 'src/dto/updateuser.dto';
+import { UpdateRolesPermissionsDto } from 'src/dto/updateRolesPermissions.dto';
 
 
 @Injectable()
@@ -264,6 +266,37 @@ export class UserService {
     verifyJwt(jwt: string): Promise<any> {
         return this.jwtService.verifyAsync(jwt, { secret: 'at-secret' });
       }
+      async getAllUsersExceptSuperadmin(): Promise<User[]> {
+        return this.userModel.find({ roles: { $ne: 'superadmin' } }).exec();
+    }
+
+    async deleteUser(userId: string): Promise<void> {
+        await this.userModel.findByIdAndDelete(userId);
+    }
+    async updateUserCredentials(userId: string, updateUserDto: UpdateUserDto): Promise<void> {
+        const { username, email, password } = updateUserDto;
+        const hashedPassword = await this.hashData(password);
+    
+        await this.userModel.findByIdAndUpdate(userId, {
+            username,
+            email,
+            password: hashedPassword,
+            hash: hashedPassword, // If needed
+        });
+    }
+    async updateRolesPermissions(userId: string, updateRolesPermissionsDto: UpdateRolesPermissionsDto): Promise<void> {
+        const { roles, permissions } = updateRolesPermissionsDto;
+    
+        const updateData: any = {};
+        if (roles) {
+            updateData.roles = roles;
+        }
+        if (permissions) {
+            updateData.permissions = permissions;
+        }
+    
+        await this.userModel.findByIdAndUpdate(userId, updateData);
+    }
   
     
 }
