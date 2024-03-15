@@ -5,6 +5,12 @@ import { User } from "./User.schema";
 export class Meeting{
     @Prop({required:true})
     lienMeet:string;
+    @Prop({required:true,type:Date})
+    dateDebut:Date;
+    @Prop({required:true})
+    time:string;
+    @Prop({required:true,default:false})
+    userIsAccepted:boolean;
     @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
     user: User;
 }
