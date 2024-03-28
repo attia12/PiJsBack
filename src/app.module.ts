@@ -17,7 +17,7 @@ import { ChatModule } from './chat/chat.module';
 
 
 @Module({
-  imports: [MongooseModule.forRoot('mongodb://127.0.0.1/pi'),UserModule,CacheModule.register(
+  imports: [MongooseModule.forRoot('mongodb://127.0.0.1/pi'),UserModule, ContractModule, LettreDeMotivationModule, MeetingModule,CacheModule.register(
     {
       ttl:10,
       max:100000,
