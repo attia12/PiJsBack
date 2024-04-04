@@ -1,12 +1,10 @@
 import { UnauthorizedException } from '@nestjs/common';
 import { OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
-
 import { Server, Socket } from 'socket.io';
-import { User } from 'src/schemas/User.schema';
-import { UserService } from 'src/user/user.service';
 import { RoomService } from '../service/room-service/room/room.service';
 import { RoomI } from 'src/schemas/room.interface';
 import { PaginationOptionsInterface } from 'src/schemas/PaginationOptionsInterface';
+import { UserService } from 'src/user/user.service';
 
 @WebSocketGateway({cors:{origin:['https://hoppscotch.io','http://localhost:4200','http://localhost:3000']}})
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -34,13 +32,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
       }else {
         socket.data.user=user;
-       
-      //  const rooms:RoomI[] = await this.roomService.getRoomsForUser(user._id, { page: 1, limit: 10 });
-      //  const roomPaginate: any = { items: rooms, meta: { totalItems: rooms.length, itemCount: rooms.length, itemsPerPage:10, totalPages: 1, currentPage: 1 } };
-      //  console.log("the roompaginator send to front",roomPaginate)
-      
-    
-      //  return this.server.to(socket.id).emit('rooms',roomPaginate);
 
       const { items, meta } = await this.roomService.getRoomsForUser(user._id, { page: 1, limit: 10 });
      // meta.currentPage=meta.currentPage-1;

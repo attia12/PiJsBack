@@ -1,12 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { IPaginationOptions, Pagination, paginate } from 'nestjs-typeorm-paginate';
 import { PaginationOptionsInterface } from 'src/schemas/PaginationOptionsInterface';
 import { Room } from 'src/schemas/Room.schema';
 import { RoomI } from 'src/schemas/room.interface';
 import { UserI } from 'src/schemas/user.interface';
-import util from 'util';
 
 @Injectable()
 export class RoomService {

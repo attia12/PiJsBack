@@ -3,8 +3,6 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { LettreDeMotivation } from 'src/schemas/LettreDeMotivation.schema';
 import { LettreDeMotivationDto } from './dto/create-dto';
-import { User } from 'src/schemas/User.schema';
-import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class LettreDeMotivationService {
