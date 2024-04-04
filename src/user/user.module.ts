@@ -12,6 +12,7 @@ import { UserSeedService } from 'src/seed/UserSeedService';
 import { EmailService } from './email/email.service';
 import { OTP, OtpSchema } from 'src/schemas/Otp.schema';
 import { GoogleStrategy } from 'src/strategies/google.strategy';
+import { ClarifaiService } from './clarifai/clarifai.service';
 
 
 
@@ -30,7 +31,7 @@ import { GoogleStrategy } from 'src/strategies/google.strategy';
 
     ]),JwtModule.register({}),
 ],
-    providers: [UserService,AtStrategy,RtStrategy,UserSeedService, EmailService,GoogleStrategy],
+    providers: [UserService,AtStrategy,RtStrategy,UserSeedService, EmailService,GoogleStrategy, ClarifaiService],
     exports:[UserService],
     controllers: [UserController]
 })
