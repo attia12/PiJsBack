@@ -287,10 +287,31 @@ async updateRolesPermissions(
     return { message: 'User roles and permissions updated successfully' };
 }
  @Public()
- @Post('detect-face')
-  async detectFace(@Body('imageUrl') imageUrl: string): Promise<any> {
-     return this.clarifaiService.detectImage(imageUrl);
-   }
+ @Post('compare-images')
+ async compareImages(@Body() body: {imageUrl1: string, imageUrl2: string}): Promise<any> {
+   const { imageUrl1, imageUrl2 } = body;
+   return this.clarifaiService.detectImage(imageUrl1, imageUrl2);
+ }
+
+ @Public()
+@Post('login-face-recognition')
+async loginWithFaceRecognition(@Body() body: { userImageUrl: string }): Promise<any> {
+  const { userImageUrl} = body;
+
+  
+  const user = await this.userService.getUserByImage(userImageUrl);
+
+  if (user) {
+  
+    const tokens = await this.userService.getTokens(user._id, user.email);
+
+   
+    return { tokens, user };
+  } else {
+   
+    throw new NotFoundException('User not found');
+  }
+}
 
 
 
