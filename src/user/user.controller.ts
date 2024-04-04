@@ -285,11 +285,6 @@ async updateRolesPermissions(
     await this.userService.updateRolesPermissions(id, updateRolesPermissionsDto);
     return { message: 'User roles and permissions updated successfully' };
 }
-
-
-
-
-
     
 }
 
