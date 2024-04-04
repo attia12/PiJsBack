@@ -26,6 +26,7 @@ import { ResetPasswordDto } from 'src/dto/resetPassword.dto';
 import { User } from 'src/schemas/User.schema';
 import { UpdateUserDto } from 'src/dto/updateuser.dto';
 import { UpdateRolesPermissionsDto } from 'src/dto/updateRolesPermissions.dto';
+import { ClarifaiService } from './clarifai/clarifai.service';
 export const storage = {
     storage: diskStorage({
         destination: './uploads/profileimages',
@@ -42,7 +43,7 @@ export const storage = {
 
 @Controller('user')
 export class UserController {
-    constructor(private userService:UserService,private readonly emailService: EmailService) {}
+    constructor(private userService:UserService,private readonly emailService: EmailService,private readonly clarifaiService: ClarifaiService) {}
     @Public()
     @Post('/signup')
     @HttpCode(HttpStatus.CREATED)
@@ -285,6 +286,37 @@ async updateRolesPermissions(
     await this.userService.updateRolesPermissions(id, updateRolesPermissionsDto);
     return { message: 'User roles and permissions updated successfully' };
 }
+ @Public()
+ @Post('compare-images')
+ async compareImages(@Body() body: {imageUrl1: string, imageUrl2: string}): Promise<any> {
+   const { imageUrl1, imageUrl2 } = body;
+   return this.clarifaiService.detectImage(imageUrl1, imageUrl2);
+ }
+
+ @Public()
+@Post('login-face-recognition')
+async loginWithFaceRecognition(@Body() body: { userImageUrl: string }): Promise<any> {
+  const { userImageUrl} = body;
+
+  
+  const user = await this.userService.getUserByImage(userImageUrl);
+
+  if (user) {
+  
+    const tokens = await this.userService.getTokens(user._id, user.email);
+
+   
+    return { tokens, user };
+  } else {
+   
+    throw new NotFoundException('User not found');
+  }
+}
+
+
+
+
+
     
 }
 

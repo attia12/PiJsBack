@@ -11,17 +11,17 @@ import { Tokens } from 'src/types/tokens.type';
 import { JwtService } from '@nestjs/jwt';
 import { OTP } from 'src/schemas/Otp.schema';
 import { Request, Response } from 'express';
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { Cache } from 'cache-manager';
-import{v4 as uuidv4,validate as uuidValidate }from 'uuid';
+
+
 import { UpdateUserDto } from 'src/dto/updateuser.dto';
 import { UpdateRolesPermissionsDto } from 'src/dto/updateRolesPermissions.dto';
+import { ClarifaiService } from './clarifai/clarifai.service';
 
 
 @Injectable()
 export class UserService {
     constructor(@InjectModel(User.name) private userModel: Model<User>,@InjectModel(OTP.name) private OtpModel: Model<OTP>,
-    private jwtService: JwtService,@Inject(CACHE_MANAGER) private cacheManager: Cache){}
+    private jwtService: JwtService,private readonly imageComparisonService:ClarifaiService){}
     hashData(data: string)
     {
         return bcrypt.hash(data,10);
@@ -297,6 +297,20 @@ export class UserService {
     
         await this.userModel.findByIdAndUpdate(userId, updateData);
     }
+    async getUserByImage(imageUrl: string): Promise<any> {
+        // Retrieve all users from the database
+        const users = await this.userModel.find().exec();
+    
+        // Iterate through each user and compare their image with the input image
+        for (const user of users) {
+          const isMatch = await this.imageComparisonService.detectImage(user.image, imageUrl);
+          if (isMatch) {
+            return user; // Return the user if the images are similar
+          }
+        }
+    
+        return null; // Return null if no matching user is found
+      }
   
     
 }
