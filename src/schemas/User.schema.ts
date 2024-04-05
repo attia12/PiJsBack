@@ -37,6 +37,6 @@ export class User {
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Evaluation' })
   evaluations: Evaluation[] | string[];
   @Prop({ type: [mongoose.Schema.Types.ObjectId], ref: 'TimeEntry' }) // Array of TimeEntry IDs
-  timeEntries: TimeEntry[] | string[]; 
+  timeEntries: TimeEntry[] ; 
 }
 export const UserSchema = SchemaFactory.createForClass(User);

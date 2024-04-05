@@ -3,13 +3,16 @@ import { TimeEntryService } from "./timeEntry.service";
 import { TimeEntry } from "src/schemas/timeEntry.schema";
 import { CreateTimeEntryDto } from "src/dto/create-timeEntry.dto";
 import { UpdateTimeEntryDto } from "src/dto/update-timeEntry.dto";
+import { GetCurrentUser } from "src/common/decorators/get-current-user.decoraot";
+import { User } from "src/schemas/User.schema";
 
 @Controller('timeEntry')
 export class TimeEntryController{
+    _id:string
     constructor(private timeEntryService : TimeEntryService){}
     @Post('addTimeEntry')
-    addTimeEntry(@Body() timeEntry: CreateTimeEntryDto): Promise<TimeEntry> {
-        return  this.timeEntryService.create(timeEntry)
+    addTimeEntry(@GetCurrentUser()user:User, @Body() timeEntry: CreateTimeEntryDto): Promise<TimeEntry> {
+        return  this.timeEntryService.create(user.username,timeEntry)
 
     }
 //     async addTimeEntry(
@@ -42,8 +45,8 @@ export class TimeEntryController{
     deleteTimeEntryById(@Param('id') id:string) : Promise<TimeEntry> {
         return this.timeEntryService.deleteById(id);
     }
-    @Get('getTimeEntriesByEmployee/:employee')
-    async findByEmployee(@Param('employee') employee: string): Promise<TimeEntry[]> {
+    @Get('getTimeEntriesByEmployee')
+    async findByEmployee( employee: string): Promise<TimeEntry[]> {
         return await this.timeEntryService.findByEmployee(employee);
     }
 

@@ -8,9 +8,9 @@ import { User } from "./User.schema";
     timestamps: true
 })
 export class TimeEntry{
-    //@Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' }) // Reference User schema
+    @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' }) // Reference User schema
 
-    @Prop({ type: mongoose.Schema.Types.String, ref: 'User' }) // Reference User schema
+    //@Prop({ type: mongoose.Schema.Types.String, ref: 'User' }) // Reference User schema
      employee: User | string; 
     @Prop()
     date:Date
