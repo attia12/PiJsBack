@@ -16,6 +16,9 @@ export class Contract{
     salaire:number;
     @Prop({ required: true, enum: Object.values(Type) })
     type: Type;
+    @Prop()
+    signature: string; // Champ pour la signature électronique
+
     @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
     user: User;
 }
