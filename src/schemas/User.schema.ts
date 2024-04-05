@@ -1,6 +1,9 @@
 /* eslint-disable prettier/prettier */
 
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import mongoose from "mongoose";
+import { Evaluation } from "./evaluation.schema";
+import { TimeEntry } from "./timeEntry.schema";
 
 
 
@@ -31,6 +34,9 @@ export class User {
    @Prop({ required: true, default: 'default_image.jpg' }) 
    image: string;
 
-
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Evaluation' })
+  evaluations: Evaluation[] | string[];
+  @Prop({ type: [mongoose.Schema.Types.ObjectId], ref: 'TimeEntry' }) // Array of TimeEntry IDs
+  timeEntries: TimeEntry[] | string[]; 
 }
 export const UserSchema = SchemaFactory.createForClass(User);

@@ -1,8 +1,8 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { Injectable, NotFoundException, Req } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import * as mongoose from "mongoose";
 import { TimeEntry } from "src/schemas/timeEntry.schema";
-
+import { UserService } from "src/user/user.service";
 @Injectable()
 export class TimeEntryService{
     constructor(
@@ -17,6 +17,17 @@ export class TimeEntryService{
         const  newTimeEntry = await this.TimeEntryModel.create(timeEntry);
         return  newTimeEntry;
     }
+    // async create(@Req() request: any, timeEntry: TimeEntry): Promise<TimeEntry> {
+    //     timeEntry.employee = request.user._id; // Assign user ID from request object
+    //     const newTimeEntry = await this.TimeEntryModel.create(timeEntry);
+    //     return newTimeEntry;
+    // }
+    // async create(userId: string, timeEntry: TimeEntry): Promise<TimeEntry> {
+    // timeEntry.employee = userId;
+    // const newTimeEntry = await this.TimeEntryModel.create(timeEntry);
+    // return newTimeEntry;
+    // }
+   
      async findById(id: string): Promise<TimeEntry> {
         const  newTimeEntry = await this.TimeEntryModel.findById(id);
         if(!newTimeEntry){
@@ -48,4 +59,9 @@ export class TimeEntryService{
             runValidators:true
         });
     }
+    async findByEmployeeAndDate(employee:string,date: Date) :Promise <TimeEntry[]>{
+        
+       let allEntries= await this.TimeEntryModel.find({employee , date});
+       return allEntries;
+   }
 }

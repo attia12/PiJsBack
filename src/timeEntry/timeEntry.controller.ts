@@ -12,6 +12,19 @@ export class TimeEntryController{
         return  this.timeEntryService.create(timeEntry)
 
     }
+//     async addTimeEntry(
+//   @Body() timeEntry: CreateTimeEntryDto,
+//   @Req() request: any
+// ): Promise<TimeEntry | any> {
+//   const userId = request.user._id; 
+//   try {
+//     const newTimeEntry = await this.timeEntryService.create( userId,timeEntry);
+//     return newTimeEntry;
+//   } catch (error) {
+//     // Handle errors appropriately
+//   }
+// }
+    
     @Get('getAllTimeEntries')
     getAllTimeEntrys() : Promise<TimeEntry[]> {
         return  this.timeEntryService.findAll();
@@ -37,5 +50,9 @@ export class TimeEntryController{
     @Put('updateTimeEntryByEmployeeDate')
     updateTimeEntryByEmployeeDate(@Body('employee') employee: string, @Body('date') date: Date,@Body() timeEntry: UpdateTimeEntryDto): Promise<TimeEntry> {
         return  this.timeEntryService.updateOneByEmployeeAndDate(employee,date, timeEntry ) ;
+    }
+    @Get('getTimeEntriesByEmployeeAndDate')
+    async findByEmployeeAndDate(@Body('employee') employee: string, @Body('date') date: Date,): Promise<TimeEntry[]> {
+        return await this.timeEntryService.findByEmployeeAndDate(employee,date);
     }
 }

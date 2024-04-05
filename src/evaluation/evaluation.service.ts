@@ -69,7 +69,9 @@ async getEmployeesAverageRatings(): Promise<{ employee: string; averageRating: n
       {
         $project: {
           _id: 0, // Exclude unnecessary _id field
-          employee: '$_id', // Assign company name from the group key
+          // employee: '$_id', // Assign company name from the group key
+        employee: '$_id.username', // Group by company name
+
           averageRating: 1, // Replace with 1 to maintain the existing behavior
         },
       },

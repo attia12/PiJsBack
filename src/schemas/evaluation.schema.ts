@@ -20,8 +20,9 @@ export class Evaluation{
 
     // @Prop({ type: mongoose.Schema.Types.ObjectId, ref: User.name })
     // employee:User
-    @Prop()
-    employee:string
+     @Prop({ type: mongoose.Schema.Types.ObjectId, required: true, ref: 'User' })
+    employee: User | string;
+    
 
 }
 export const EvaluationSchema = SchemaFactory.createForClass(Evaluation)
