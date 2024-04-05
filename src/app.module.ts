@@ -10,6 +10,7 @@ import { MeetingModule } from './meeting/meeting.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { CacheModule } from '@nestjs/cache-manager';
 import { ChatModule } from './chat/chat.module';
+import { CongeModule } from './conge/conge.module';
 
 
 
@@ -17,7 +18,7 @@ import { ChatModule } from './chat/chat.module';
 
 
 @Module({
-  imports: [MongooseModule.forRoot('mongodb://127.0.0.1/pi'),UserModule, ContractModule, LettreDeMotivationModule, MeetingModule,CacheModule.register(
+  imports: [MongooseModule.forRoot('mongodb://127.0.0.1/pi'),UserModule, ContractModule, LettreDeMotivationModule, MeetingModule,CongeModule,CacheModule.register(
     {
       ttl:10,
       max:100000,
@@ -38,7 +39,8 @@ MailerModule.forRoot({
     from: '"No Reply" <noreply@example.com>',
   },
 }),
-ChatModule],
+ChatModule,
+CongeModule],
   controllers: [],
   providers: [
     {
