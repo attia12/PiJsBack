@@ -4,6 +4,7 @@ import { Model } from 'mongoose';
 import { AjouterMeetingDto } from './dto/ajouterMeetingdto';
 import { Meeting } from 'src/schemas/Meeting.schema';
 import { User } from 'src/schemas/User.schema';
+import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class MeetingService {
@@ -18,10 +19,12 @@ export class MeetingService {
        return meeting.save();
     }
  
-    async getMeetingsByUserId(userId: string): Promise<Meeting[]> {
-      return this.meetingModel
-        .find({ user: userId })
-        .populate('user')
-        .exec();
+    async getMeetingByUserId(userId: string): Promise<Meeting> {
+      return this.meetingModel.findOne({ user: userId }).exec();
     }
+    async afficherMeets(): Promise<Meeting[]> {
+      return await this.meetingModel.find().exec();
+    }
+    
+    
 }

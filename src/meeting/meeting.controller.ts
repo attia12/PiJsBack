@@ -15,8 +15,12 @@ export class MeetingController {
         return this.meetingSerivce.addMeeting(meetDto,id);
     }
     
-    @Get('byUser/:id')
-    async getMeetingsByUserId(@Param('id') userId: string): Promise<Meeting[]> {
-      return this.meetingSerivce.getMeetingsByUserId(userId);
+    @Get('byUser/:userId')
+    async getMeetingByUserId(@GetCurrentUser() @Param('userId') userId: string): Promise<Meeting> {
+      return this.meetingSerivce.getMeetingByUserId(userId);
+    }
+    @Get('meets')
+    async afficherLettres() {
+      return this.meetingSerivce.afficherMeets();
     }
 }
