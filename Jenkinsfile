@@ -46,7 +46,7 @@ sh('npm run build-dev')
 }
 }
 }
-tage('Run application ') {
+stage('Run application ') {
 steps{
 script {
 docker.withRegistry("http://"+registry, registryCredentials
