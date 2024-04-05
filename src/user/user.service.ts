@@ -11,17 +11,19 @@ import { Tokens } from 'src/types/tokens.type';
 import { JwtService } from '@nestjs/jwt';
 import { OTP } from 'src/schemas/Otp.schema';
 import { Request, Response } from 'express';
+import { v4 as uuidv4 } from 'uuid';
 
 
 import { UpdateUserDto } from 'src/dto/updateuser.dto';
 import { UpdateRolesPermissionsDto } from 'src/dto/updateRolesPermissions.dto';
 import { ClarifaiService } from './clarifai/clarifai.service';
+import { EmailService } from './email/email.service';
 
 
 @Injectable()
 export class UserService {
     constructor(@InjectModel(User.name) private userModel: Model<User>,@InjectModel(OTP.name) private OtpModel: Model<OTP>,
-    private jwtService: JwtService,private readonly imageComparisonService:ClarifaiService){}
+    private jwtService: JwtService,private readonly imageComparisonService:ClarifaiService,private readonly emailService: EmailService){}
     hashData(data: string)
     {
         return bcrypt.hash(data,10);
@@ -76,9 +78,11 @@ export class UserService {
     
    async signUp(dto: AuthDto):Promise<Tokens>
     {
+        const verificationToken = uuidv4();
         const hash=await this.hashData(dto.password);
     
-        const newUser = await this.userModel.create({...dto,password:hash, hash: hash});
+        const newUser = await this.userModel.create({...dto,password:hash, hash: hash,verified: false,verificationToken: verificationToken,});
+        await this.emailService.sendVerificationEmail(newUser.email, verificationToken)
         const tokens =await this.getTokens(newUser.id,newUser.email)
         await this.updateRtHash(newUser.id,tokens.refresh_token);
         return tokens;
@@ -90,6 +94,9 @@ export class UserService {
         const user=await this.userModel.findOne({email:dto.email})
         console.log("this is the user " ,user);
         if(!user) throw new ForbiddenException("Access Denied")
+        if (!user.verified) {
+                throw new ForbiddenException('Account not verified');
+              }
         const passwordMatches=await bcrypt.compare(dto.password,user.hash);
         if(!passwordMatches) throw new ForbiddenException("Access Denied");
         const tokens =await this.getTokens(user.id,user.email)
@@ -255,7 +262,9 @@ export class UserService {
                  hashedRt: accessToken, // Store the plain access token
                  roles: ['employee'], // Set default roles
                 permissions: [], // Set default permissions
-                image: picture, // Store the profile picture URL
+                image: picture,
+                verified: true ,
+               // Store the profile picture URL
              });
     
            
@@ -310,6 +319,13 @@ export class UserService {
         }
     
         return null; // Return null if no matching user is found
+      }
+      async findByVerificationToken(verificationToken: string): Promise<any> {
+        return this.userModel.findOne({ verificationToken });
+      }
+      
+      async verifyAccount(userId: string): Promise<any> {
+        await this.userModel.findByIdAndUpdate(userId, { verified: true, verificationToken: null });
       }
   
     

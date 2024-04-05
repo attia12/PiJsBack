@@ -30,6 +30,13 @@ export class User {
    image: string;
    @Prop({ type: [{ type: 'ObjectId', ref: 'Room' }] }) 
     rooms: Room[]; 
+    @Prop({ required: true, default: false }) 
+verified: boolean;
+// @Prop({ required: true })
+//   verificationToken: string;
+@Prop()
+verificationToken: string;
+
 
 
 }

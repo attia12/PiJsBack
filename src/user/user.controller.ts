@@ -310,7 +310,27 @@ async loginWithFaceRecognition(@Body() body: { userImageUrl: string }): Promise<
   } else {
    
     throw new NotFoundException('User not found');
+
+
+
+
   }
+}
+@Public()
+@Get('verify/:token')
+async verifyAccount(@Param('token') token: string): Promise<any> {
+  // Find the user with the given verification token
+  const user = await this.userService.findByVerificationToken(token);
+  if (!user) {
+    // Handle invalid or expired verification tokens
+    return 'Invalid or expired verification token';
+  }
+
+  // Mark the user's account as verified
+  await this.userService.verifyAccount(user._id);
+
+  // Redirect the user to a page indicating successful verification
+  return 'Account verified successfully';
 }
 
 

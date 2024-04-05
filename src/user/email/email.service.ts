@@ -18,4 +18,10 @@ export class EmailService {
     const body = `Your OTP for password reset is: ${otp}`;
     await this.sendEmail(to, subject, body);
 }
+async sendVerificationEmail(to: string, verificationToken: string): Promise<void> {
+  const subject = 'Verify Your Account';
+  const verificationLink = `http://localhost:3000/user/verify/${verificationToken}`; // Replace with your verification endpoint
+  const body = `Click the following link to verify your account: ${verificationLink}`;
+  await this.sendEmail(to, subject, body);
+}
 }
