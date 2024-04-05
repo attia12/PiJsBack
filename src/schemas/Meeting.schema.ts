@@ -11,7 +11,7 @@ export class Meeting{
     time:string;
     @Prop({required:true,default:false})
     userIsAccepted:boolean;
-    @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
+    @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User',unique:true })
     user: User;
 }
 export const MeetingSchema = SchemaFactory.createForClass(Meeting);

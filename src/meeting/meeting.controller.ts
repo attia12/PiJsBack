@@ -4,6 +4,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { AjouterMeetingDto } from './dto/ajouterMeetingdto';
 import { Meeting } from 'src/schemas/Meeting.schema';
 import { GetCurrentUser } from 'src/common/decorators/get-current-user.decoraot';
+import { User } from 'src/schemas/User.schema';
 
 @Controller('meeting')
 export class MeetingController {
@@ -14,8 +15,8 @@ export class MeetingController {
         return this.meetingSerivce.addMeeting(meetDto,id);
     }
     
-  @Get('byUser')
-  async findAllByUser(@GetCurrentUser() userId: string): Promise<Meeting[]> {
-    return this.meetingSerivce.findAllByUser(userId);
-  }
+    @Get('byUser/:id')
+    async getMeetingsByUserId(@Param('id') userId: string): Promise<Meeting[]> {
+      return this.meetingSerivce.getMeetingsByUserId(userId);
+    }
 }

@@ -10,7 +10,7 @@ export class LettreDeMotivation{
   cv: string;
   @Prop({required:true,default:'false'})
   isVerified:boolean; 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User',unique:true })
   user: User;
 }
 export const LettreDeMotivationSchema= SchemaFactory.createForClass(LettreDeMotivation);

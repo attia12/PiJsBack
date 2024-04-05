@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { AjouterMeetingDto } from './dto/ajouterMeetingdto';
 import { Meeting } from 'src/schemas/Meeting.schema';
+import { User } from 'src/schemas/User.schema';
 
 @Injectable()
 export class MeetingService {
@@ -17,7 +18,10 @@ export class MeetingService {
        return meeting.save();
     }
  
-    async findAllByUser(userId: string): Promise<Meeting[]> {
-        return this.meetingModel.find({ user: userId }).exec();
-      }
+    async getMeetingsByUserId(userId: string): Promise<Meeting[]> {
+      return this.meetingModel
+        .find({ user: userId })
+        .populate('user')
+        .exec();
+    }
 }
