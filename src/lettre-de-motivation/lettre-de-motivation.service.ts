@@ -29,4 +29,8 @@ export class LettreDeMotivationService {
         }
         return lettre;
       }
+      
+    async getLettreDeMotivationByUser(userId: string): Promise<LettreDeMotivation | null> {
+      return this.lettreModel.findOne({ user: userId }).exec();
+  }
 }
