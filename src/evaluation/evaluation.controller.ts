@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query, Req } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpCode, HttpException, HttpStatus, Param, Post, Put, Query, Req } from "@nestjs/common";
 import { EvaluationService } from "./evaluation.service";
 import { Evaluation } from "src/schemas/evaluation.schema";
 import { CreateEvaluationDto } from "src/dto/create-evaluation.dto";
@@ -46,6 +46,7 @@ async getAllEmployeesAverageRatings(): Promise<{ employee: string; averageRating
     console.error('Error getting all employees average ratings:', error);
   }
 }
+
 
 
 

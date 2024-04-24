@@ -3,9 +3,10 @@ import { User } from "src/schemas/User.schema";
 
 
 export class CreateTimeEntryDto{
-    employee:string;
+    employee:string
     date:Date
     tempsDeTravail:string
     status:string
     justification:string
+    
 }

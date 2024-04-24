@@ -62,7 +62,8 @@ async getEmployeesAverageRatings(): Promise<{ employee: string; averageRating: n
     const result = await this.EvaluationModel.aggregate([
       {
         $group: {
-          _id: '$employee', // Group by company name
+          _id: '$employee', 
+        // Group by company name
           averageRating: { $avg: '$note' }, // Calculate average rating
         },
       },
@@ -70,13 +71,14 @@ async getEmployeesAverageRatings(): Promise<{ employee: string; averageRating: n
         $project: {
           _id: 0, // Exclude unnecessary _id field
           // employee: '$_id', // Assign company name from the group key
-        employee: '$_id.username', // Group by company name
+        employee: '$_id',
+        // Group by company name
 
           averageRating: 1, // Replace with 1 to maintain the existing behavior
         },
       },
     ]);
-    return result.map((item) => ({ employee: item.employee, averageRating: item.averageRating }));
+    return result.map((item) => ({ employee: item.employee,username: item.username, averageRating: item.averageRating }));
   } catch (error) {
     console.error('Error getting all companies average ratings:', error);
     throw error; // Re-throw for further handling

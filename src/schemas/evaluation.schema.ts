@@ -11,8 +11,8 @@ import { User } from "./User.schema";
 export class Evaluation{
     // @Prop({ type: mongoose.Schema.Types.ObjectId, ref: User.name })
     // company:User
-    @Prop()
-    company:string
+    @Prop({ type: mongoose.Schema.Types.ObjectId, required: true, ref: 'User' })
+    company: User|string;
     @Prop()
     commentaire:string
     @Prop()

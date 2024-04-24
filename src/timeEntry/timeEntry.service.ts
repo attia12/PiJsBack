@@ -23,8 +23,7 @@ export class TimeEntryService{
     //     const newTimeEntry = await this.TimeEntryModel.create(timeEntry);
     //     return newTimeEntry;
     // }
-    async create(userId: string, timeEntry: TimeEntry): Promise<TimeEntry> {
-        timeEntry.employee = userId;
+    async create( timeEntry: TimeEntry): Promise<TimeEntry> {
         const newTimeEntry = await this.TimeEntryModel.create(timeEntry);
         return newTimeEntry;
     }
@@ -48,8 +47,7 @@ export class TimeEntryService{
         return await this.TimeEntryModel.findByIdAndDelete(id);
        
     }
-    async findByEmployee(employee: string): Promise<TimeEntry[]> { 
-         
+    async findByEmployee(employee: string): Promise<TimeEntry[]> {  
          return await this.TimeEntryModel.find({employee: employee });
     }
 

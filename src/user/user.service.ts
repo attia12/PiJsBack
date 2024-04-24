@@ -3,7 +3,7 @@
 
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, ObjectId } from 'mongoose';
 import { AuthDto } from 'src/dto/auth.dto';
 import { User } from 'src/schemas/User.schema';
 import * as bcrypt from 'bcrypt';
@@ -120,6 +120,13 @@ export class UserService {
         }
         return user;
     }
+    async getUserNameById(userId: string): Promise<String> {
+        const user = await this.userModel.findById(userId);
+        if (!user) {
+            throw new NotFoundException('User not found');
+        }
+        return user.username;
+    }
     async updateImage(userId: string, newImage: string): Promise<User> {
        
         const user = await this.userModel.findById(userId);
@@ -133,4 +140,8 @@ export class UserService {
        
         return await user.save();
     }
+     async getUserIdByUsername(username: string): Promise<string | undefined> {
+    let user = await this.userModel.findOne({username});
+    return user._id.toString(); 
+  }
 }

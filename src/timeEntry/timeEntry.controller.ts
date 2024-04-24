@@ -11,8 +11,8 @@ export class TimeEntryController{
     _id:string
     constructor(private timeEntryService : TimeEntryService){}
     @Post('addTimeEntry')
-    addTimeEntry(@GetCurrentUser()user:User, @Body() timeEntry: CreateTimeEntryDto): Promise<TimeEntry> {
-        return  this.timeEntryService.create(user.username,timeEntry)
+    addTimeEntry( @Body() timeEntry: CreateTimeEntryDto): Promise<TimeEntry> {
+        return  this.timeEntryService.create(timeEntry)
 
     }
 //     async addTimeEntry(
@@ -45,8 +45,8 @@ export class TimeEntryController{
     deleteTimeEntryById(@Param('id') id:string) : Promise<TimeEntry> {
         return this.timeEntryService.deleteById(id);
     }
-    @Get('getTimeEntriesByEmployee')
-    async findByEmployee( employee: string): Promise<TimeEntry[]> {
+    @Get('getTimeEntriesByEmployee/:employee')
+    async findByEmployee( @Param('employee') employee: string): Promise<TimeEntry[]> {
         return await this.timeEntryService.findByEmployee(employee);
     }
 
