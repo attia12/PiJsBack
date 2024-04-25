@@ -10,6 +10,9 @@ import { MeetingModule } from './meeting/meeting.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { CacheModule } from '@nestjs/cache-manager';
 import { ChatModule } from './chat/chat.module';
+import { EvaluationModule } from './evaluation/evaluation.module';
+import { TimeEntryModule } from './timeEntry/timeEntry.module';
+
 
 
 

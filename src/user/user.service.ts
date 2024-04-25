@@ -141,6 +141,14 @@ export class UserService {
        
         return await user.save();
     }
+    async getUserNameById(userId: string): Promise<String> {
+    const user = await this.userModel.findById(userId);
+    if (!user) {
+        throw new NotFoundException('User not found');
+    }
+    return user.username;
+}
+    
     async findByEmail(email: string): Promise<User | null> {
         return this.userModel.findOne({ email });
     }
@@ -184,9 +192,9 @@ export class UserService {
     console.error('Error during Google redirect:', error);
     res.status(HttpStatus.INTERNAL_SERVER_ERROR).send('Internal Server Error');
 }
-  
 
-      
+
+
        
 
        
@@ -313,4 +321,9 @@ export class UserService {
       }
   
     
+    
+     async getUserIdByUsername(username: string): Promise<string | undefined> {
+    let user = await this.userModel.findOne({username});
+    return user._id.toString(); 
+  }
 }

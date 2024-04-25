@@ -2,6 +2,11 @@
 
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Room } from "./Room.schema";
+import mongoose from "mongoose";
+import { Evaluation } from "./evaluation.schema";
+import { TimeEntry } from "./timeEntry.schema";
+
+
 
 
 @Schema()
@@ -31,6 +36,9 @@ export class User {
    @Prop({ type: [{ type: 'ObjectId', ref: 'Room' }] }) 
     rooms: Room[]; 
 
-
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Evaluation' })
+  evaluations: Evaluation[] | string[];
+  @Prop({ type: [mongoose.Schema.Types.ObjectId], ref: 'TimeEntry' }) // Array of TimeEntry IDs
+  timeEntries: TimeEntry[] ; 
 }
 export const UserSchema = SchemaFactory.createForClass(User);
