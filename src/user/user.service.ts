@@ -11,8 +11,6 @@ import { Tokens } from 'src/types/tokens.type';
 import { JwtService } from '@nestjs/jwt';
 import { OTP } from 'src/schemas/Otp.schema';
 import { Request, Response } from 'express';
-
-
 import { UpdateUserDto } from 'src/dto/updateuser.dto';
 import { UpdateRolesPermissionsDto } from 'src/dto/updateRolesPermissions.dto';
 import { ClarifaiService } from './clarifai/clarifai.service';

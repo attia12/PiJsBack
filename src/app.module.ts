@@ -11,6 +11,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { CacheModule } from '@nestjs/cache-manager';
 import { ChatModule } from './chat/chat.module';
 import { EvaluationModule } from './evaluation/evaluation.module';
+
 import { TimeEntryModule } from './timeEntry/timeEntry.module';
 
 
@@ -18,9 +19,8 @@ import { TimeEntryModule } from './timeEntry/timeEntry.module';
 
 
 
-
 @Module({
-  imports: [MongooseModule.forRoot('mongodb://127.0.0.1/pi'),UserModule, ContractModule, LettreDeMotivationModule, MeetingModule,CacheModule.register(
+  imports: [MongooseModule.forRoot('mongodb://127.0.0.1/pi'),UserModule, ContractModule, LettreDeMotivationModule, EvaluationModule,TimeEntryModule,MeetingModule,CacheModule.register(
     {
       ttl:10,
       max:100000,
