@@ -15,13 +15,6 @@ pipeline {
                 }
             }
         }
-        stage('Deploy to Nexus') {
-            steps {
-                script {
-                    sh("docker push ${registry}/nodemongoapp:6.0")
-                }
-            }
-        }
         stage('Run application') {
             steps {
                 script {
