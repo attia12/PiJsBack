@@ -2,7 +2,7 @@
 import { Module } from '@nestjs/common';
 import { UserModule } from './user/user.module';
 import { MongooseModule } from '@nestjs/mongoose';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { AtGuard } from './common/guards/at.guard';
 import { ContractModule } from './contract/contract.module';
 import { LettreDeMotivationModule } from './lettre-de-motivation/lettre-de-motivation.module';
@@ -13,6 +13,8 @@ import { ChatModule } from './chat/chat.module';
 import { EvaluationModule } from './evaluation/evaluation.module';
 
 import { TimeEntryModule } from './timeEntry/timeEntry.module';
+import { SentryInterceptor } from './interceptors/sentry/sentry.interceptor';
+
 
 
 
@@ -45,10 +47,13 @@ ChatModule],
   controllers: [],
   providers: [
     {
-      provide:APP_GUARD,
-      useClass:AtGuard
+      provide: APP_GUARD,
+      useClass: AtGuard,
     },
-     
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: SentryInterceptor,
+    },
   ],
 })
 export class AppModule {
