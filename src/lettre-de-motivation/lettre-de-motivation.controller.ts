@@ -16,7 +16,7 @@ export class LettreDeMotivationController {
     @UseInterceptors(FileInterceptor('cv'))
     async insererLettre(@UploadedFile() file: Express.Multer.File, @Body() lettreDto: LettreDeMotivationDto, @GetCurrentUser() user: any) {
       if (!file) {
-        throw new BadRequestException('No fileee uploaded');
+        throw new BadRequestException('No fileeee uploaded');
       }
       lettreDto.cv = file; 
       return this.lettreService.insererLettre(lettreDto,user.sub);
