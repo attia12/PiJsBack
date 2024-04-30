@@ -1,4 +1,5 @@
-FROM node:20-alpine
+ENV NODE_VERSION=20.12.7
+FROM node:20.12.7
 RUN mkdir ~/app
 WORKDIR ~
 COPY package*.json ./
