@@ -1,9 +1,9 @@
 FROM node:20-alpine
-RUN mkdir ~/app
+RUN mkdir -p ~/app
 WORKDIR ~
 COPY package*.json ./
 RUN npm install && npm cache clean --force
-ENV PATH ~/node_modules/.bin:$PATH
+ENV PATH ~/app/.bin:$PATH
 WORKDIR ~/app
 COPY . .
 #RUN npm run build-dev
