@@ -1,10 +1,10 @@
 FROM node:20-alpine
-RUN mkdir /usr/src/app
-WORKDIR /usr/src
+RUN mkdir ~/app
+WORKDIR ~
 COPY package*.json ./
 RUN npm install --no-optional && npm cache clean --force
-ENV PATH /usr/src/node_modules/.bin:$PATH
-WORKDIR /usr/src/app
+ENV PATH ~/node_modules/.bin:$PATH
+WORKDIR ~/app
 COPY . .
 #RUN npm run build-dev
 EXPOSE 5000
