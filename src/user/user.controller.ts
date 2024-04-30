@@ -20,7 +20,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { Observable, of } from 'rxjs';
 import { join } from 'path';
 import mongoose from 'mongoose';
-import { EmailService } from './email/email.service';
+//import { EmailService } from './email/email.service';
 import { ForgotPasswordDto } from 'src/dto/forgotPassword.dto';
 import { ResetPasswordDto } from 'src/dto/resetPassword.dto';
 import { User } from 'src/schemas/User.schema';
@@ -43,7 +43,7 @@ export const storage = {
 
 @Controller('user')
 export class UserController {
-    constructor(private userService:UserService,private readonly emailService: EmailService,private readonly clarifaiService: ClarifaiService) {}
+    constructor(private userService:UserService,/*private readonly emailService: EmailService*/private readonly clarifaiService: ClarifaiService) {}
     @Public()
     @Post('/signup')
     @HttpCode(HttpStatus.CREATED)
@@ -159,7 +159,7 @@ export class UserController {
 findProfileImage(@Param('imagename') imagename, @Res() res): Observable<object> {
     return of(res.sendFile(join(process.cwd(), 'uploads/profileimages/' + imagename)));
 }
-@Public()
+/*@Public()
 @Get('/email')
   async sendTestEmail() {
     await this.emailService.sendEmail(
@@ -168,8 +168,8 @@ findProfileImage(@Param('imagename') imagename, @Res() res): Observable<object> 
       'This is a test email sent from NestJS!'
     );
     return 'Email sent successfully!';
-  }
-  @Public()
+  } */
+  /* @Public()
   @Post('/sendOtp')
     @HttpCode(HttpStatus.OK)
     async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto): Promise<{ message: string }> {
@@ -189,7 +189,7 @@ findProfileImage(@Param('imagename') imagename, @Res() res): Observable<object> 
         await this.emailService.sendOTPByEmail(email, otp);
 
         return { message: 'OTP has been sent to your email for password reset verification.' };
-    }
+    } */
     @Public()
     @Post('/reset-password')
     async resetPassword(@Body() resetPasswordDto: ResetPasswordDto): Promise<{ message: string }> {

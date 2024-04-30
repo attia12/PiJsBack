@@ -8,9 +8,9 @@ pipeline {
         stage('Building and pushing Docker image') {
             steps {
                 script {
-                    docker.build("nodemongoapp:6.0")
+                    docker.build("appPi:6.0")
                     docker.withRegistry("http://${registry}", registryCredentials) {
-                        docker.image("nodemongoapp:6.0").push()
+                        docker.image("appPi:6.0").push()
                     }
                 }
             }
@@ -19,7 +19,7 @@ pipeline {
             steps {
                 script {
                     docker.withRegistry("http://${registry}", registryCredentials) {
-                        sh("docker pull ${registry}/nodemongoapp:6.0")
+                        sh("docker pull ${registry}/appPi:6.0")
                         sh("docker-compose up -d")
                     }
                 }

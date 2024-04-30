@@ -31,7 +31,7 @@ import { ClarifaiService } from './clarifai/clarifai.service';
 
     ]),JwtModule.register({}),
 ],
-    providers: [UserService,AtStrategy,RtStrategy,UserSeedService, EmailService,GoogleStrategy, ClarifaiService],
+    providers: [UserService,AtStrategy,RtStrategy,UserSeedService,EmailService,GoogleStrategy, ClarifaiService],
     exports:[UserService],
     controllers: [UserController]
 })
