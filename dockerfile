@@ -7,9 +7,6 @@ WORKDIR /usr/src/app
 # Copier les fichiers de configuration du package.json et package-lock.json pour installer les dépendances
 COPY package*.json ./
 
-# Installation des dépendances
-RUN npm ci --only=production
-
 # Copier tous les autres fichiers de l'application
 COPY . .
 
