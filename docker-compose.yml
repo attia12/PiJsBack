@@ -9,6 +9,7 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: example
     ports:
       - 27017:27017
+
   app:
     build: .
     restart: always
@@ -23,5 +24,6 @@ services:
       - db
     volumes:
       - mongo-data:/path/in/container
+
 volumes:
   mongo-data:
