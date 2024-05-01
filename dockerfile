@@ -7,10 +7,16 @@ WORKDIR /usr/src/app
 # Copier les fichiers de configuration du package.json et package-lock.json pour installer les dépendances
 COPY package*.json ./
 
+
 # Copier tous les autres fichiers de l'application
 COPY . .
+
+
 # Exposer le port 5000
 EXPOSE 5000
+
+# Ajouter le chemin absolu vers l'exécutable NestJS au PATH
+ENV PATH="/usr/src/app/node_modules/.bin:${PATH}"
 
 # Commande pour exécuter l'application en mode développement
 CMD ["npm", "run", "start:dev"]
