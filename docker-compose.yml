@@ -9,25 +9,19 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: example
     ports:
       - 27017:27017
-    networks:
-      - my-network
-
   app:
     build: .
     restart: always
     container_name: back
     ports:
-      - '5000:5000'
+      - '5000:3000'
+    environment:
+      APP_NAME: pi
+      PORT: 3000
+      DB_URI: mongodb://db:27017/pi
     depends_on:
       - db
     volumes:
       - mongo-data:/path/in/container
-    networks:
-      - my-network
-
 volumes:
   mongo-data:
-
-networks:
-  my-network:
-    driver: bridge
