@@ -1,22 +1,12 @@
-# Utilisation de l'image officielle Node.js 20
 FROM node:20
-
-# Créer le répertoire de travail et définir le répertoire de travail comme répertoire principal
+RUN  mkdir -p /usr/src/app
 WORKDIR /usr/src/app
-
-# Copier les fichiers de configuration du package.json et package-lock.json pour installer les dépendances
-COPY package*.json ./
-
-
-# Copier tous les autres fichiers de l'application
+COPY package.json package-lock.json ./
+RUN npm install && npm cache clean --force
 COPY . .
-
-
-# Exposer le port 5000
+RUN npm run build-dev
 EXPOSE 5000
-
-# Ajouter le chemin absolu vers l'exécutable NestJS au PATH
-ENV PATH="/usr/src/app/node_modules/.bin:${PATH}"
-
-# Commande pour exécuter l'application en mode développement
 CMD ["npm", "run", "start:dev"]
+
+
+
