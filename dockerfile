@@ -9,10 +9,6 @@ COPY package*.json ./
 
 # Copier tous les autres fichiers de l'application
 COPY . .
-
-# Construire l'application
-RUN npm run build-dev
-
 # Exposer le port 5000
 EXPOSE 5000
 
