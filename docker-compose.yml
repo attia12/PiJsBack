@@ -4,11 +4,6 @@ services:
     image: mongo:4.2
     container_name: db
     restart: always
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: example
-    ports:
-      - 27017:27017
 
   app:
     build: .
@@ -16,14 +11,16 @@ services:
     container_name: back
     ports:
       - '5000:3000'
-    environment:
-      APP_NAME: pi
-      PORT: 3000
-      DB_URI: mongodb://db:27017/pi
     depends_on:
       - db
     volumes:
       - mongo-data:/path/in/container
+    networks:
+      - my-network
 
 volumes:
   mongo-data:
+
+networks:
+  my-network:
+    driver: bridge
