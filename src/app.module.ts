@@ -14,6 +14,11 @@ import { EvaluationModule } from './evaluation/evaluation.module';
 
 import { TimeEntryModule } from './timeEntry/timeEntry.module';
 import { SentryInterceptor } from './interceptors/sentry/sentry.interceptor';
+import { EventEmitterModule } from '@nestjs/event-emitter';
+import { ConfigModule } from '@nestjs/config';
+import { ChatCompletionApiModule } from './chat-completion-api/chat-completion-api.module';
+import { KnnService } from './knn/knn.service';
+import { KnnController } from './knn/knn.controller';
 
 
 
@@ -29,6 +34,9 @@ import { SentryInterceptor } from './interceptors/sentry/sentry.interceptor';
       isGlobal:true,
     }
   ),
+  ConfigModule.forRoot({
+    isGlobal: true, // Make ConfigModule available globally
+  }),
 MailerModule.forRoot({
   transport: {
     host: 'smtp.gmail.com',
@@ -43,8 +51,10 @@ MailerModule.forRoot({
     from: '"No Reply" <noreply@example.com>',
   },
 }),
-ChatModule],
-  controllers: [],
+ChatModule,
+EventEmitterModule.forRoot(),
+ChatCompletionApiModule],
+  controllers: [KnnController],
   providers: [
     {
       provide: APP_GUARD,
@@ -54,6 +64,7 @@ ChatModule],
       provide: APP_INTERCEPTOR,
       useClass: SentryInterceptor,
     },
+    KnnService,
   ],
 })
 export class AppModule {

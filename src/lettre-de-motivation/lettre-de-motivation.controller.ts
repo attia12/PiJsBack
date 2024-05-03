@@ -3,14 +3,21 @@ import { FileInterceptor } from '@nestjs/platform-express/multer';
 import { LettreDeMotivationDto } from './dto/create-dto';
 import { LettreDeMotivationService } from './lettre-de-motivation.service';
 import { GetCurrentUser } from 'src/common/decorators/get-current-user.decoraot';
-import { User } from 'src/schemas/User.schema';
 import { AuthGuard } from '@nestjs/passport';
 import { LettreDeMotivation } from 'src/schemas/LettreDeMotivation.schema';
+import { KnnService } from 'src/knn/knn.service';
 
 @Controller('lettre-de-motivation')
 export class LettreDeMotivationController {
-    constructor(private readonly lettreService: LettreDeMotivationService) {}
+  constructor(
+    private readonly lettreService: LettreDeMotivationService
+  ) {}
 
+  @Post('classify')
+  async classify(@Body() body: { vector: number[] }) {
+    const label = await this.lettreService.detecterSimilarite(body.vector);
+    return { classification: label };
+  }
     @Post('insertion')
     @UseGuards(AuthGuard('jwt'))
     @UseInterceptors(FileInterceptor('cv'))
@@ -21,6 +28,10 @@ export class LettreDeMotivationController {
       lettreDto.cv = file; 
       return this.lettreService.insererLettre(lettreDto,user.sub);
     }
+    @Post('generate')
+  generateMotivationLetter(@Body() body: { description: string; cv: File }): string {
+    return this.lettreService.generateMotivationLetter(body.description, body.cv);
+  }
     
   @Get('getLettres')
   async afficherLettres( ) {
